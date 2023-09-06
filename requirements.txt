@@ -2,5 +2,6 @@ flask==2.1.0
 PyYAML
 ipywidgets==7.6.5
 flask-cors
+torch
 
 -e ./shap-e

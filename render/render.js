@@ -1,6 +1,7 @@
 import * as THREE from '/node_modules/three/build/three.module.js';
 import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { OBJLoader } from '/node_modules/three/examples/jsm/loaders/OBJLoader.js';
+import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87ceeb); // Sky blue color
@@ -55,13 +56,13 @@ document.getElementById('prompt-form').addEventListener('submit', function(event
 
   var prompt = document.getElementById('prompt').value;
 
-  fetch('http://localhost:5000/generate_3d', {
+  fetch('http://localhost:5005/generate_3d_mock', {
     method: 'POST',
     mode: 'cors',
     headers: {
-      'Origin': 'http://127.0.0.1:8080',
+
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-': '*'
     },
     body: JSON.stringify({ prompt: prompt })
   })
@@ -69,7 +70,14 @@ document.getElementById('prompt-form').addEventListener('submit', function(event
   .then(blob => {
     console.log('3d model generated');
     var url = URL.createObjectURL(blob);
+    const loader = new GLTFLoader();
+    loader.load(url, (gltf) => {
+      scene.add(gltf.scene);
 
-    loadAndAddModel(url);
+      gltf.scene.position.set(0, 1, 0);
+      gltf.scene.rotation.set(-Math.PI/2, 0, 0);
+      gltf.scene.scale.set(1, 1, 1);
+    })
+    //loadAndAddModel(url);
   });
 });
