@@ -5,10 +5,13 @@ app/model.obj
 app/tmp_mesh.obj
 
 venv/
-.gitignore
 
 render/.parcel-cache/
-render/dist/
-render/node_modules/
 
 ui/
+
+node_modules
+
+.idea
+
+dist
