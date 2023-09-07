@@ -4,11 +4,15 @@ import { Client } from '@banana-dev/banana-dev'
 const map: Record<string, string> = {
   house: 'house.obj',
   fountain: 'fountain.obj',
-  tree: 'tree.obj'
+  tree: 'tree.obj',
+  river: 'river.obj',
+  car: 'car.obj',
+  street: 'street.obj',
+  'street light': 'street-light.obj',
 }
 
-const fetchFromS3 = async (key: string) => {
-  const blob = await fetch(`https://flow-ai-hackathon.s3.us-west-1.amazonaws.com/${map[key]}`).then(_ => _.blob()).catch(e => {
+const fetchFromS3 = async (url: string) => {
+  const blob = await fetch(url).then(_ => _.blob()).catch(e => {
     console.error('Error fetching from S3', e)
     throw e
   })
@@ -28,14 +32,14 @@ export const POST = async (req: NextRequest) => {
 
   try {
     if (map[prompt]) {
-      return fetchFromS3(prompt)
+      return fetchFromS3(`https://flow-ai-hackathon.s3.us-west-1.amazonaws.com/${map[prompt]}`)
     }
 
     const { json, meta } = await model.call('/', { prompt })
 
-    console.log('Output from Banana.dev', json, meta)
+    console.log('Output from Banana.dev', json)
 
-    return fetchFromS3(`https://flow-ai-hackathon.s3.us-west-1.amazonaws.com/${prompt}`)
+    return fetchFromS3(json.url)
   } catch (e) {
     console.error('Error running Banana.dev', e)
   }
