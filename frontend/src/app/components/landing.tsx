@@ -3,7 +3,7 @@ import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
+import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Toast } from 'primereact/toast'
 import { Message } from 'primereact/message'
@@ -14,7 +14,7 @@ import { useSpring } from '@react-spring/three'
 import { randomNumber } from '@/app/lib/math'
 
 export const Landing = () => {
-  const [model, setModel] = useState<string>()
+  const [models, setModels] = useState<string[]>([])
   const [prompt, setPrompt] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>()
@@ -39,7 +39,7 @@ export const Landing = () => {
       .then(blob => {
         console.log(blob)
         const url = URL.createObjectURL(blob)
-        setModel(url)
+        setModels([...models, url])
       }).catch(e => {
         console.error('Error retrieving models from server', { e })
         setError('An error occurred :(')
@@ -82,15 +82,16 @@ export const Landing = () => {
           <Button label='Submit' disabled={!prompt} size={'small'} onClick={onSubmit} loading={isLoading}
                   className={'!ml-3'} />
         </div>
-        {!model &&
+        {models.length > 0 &&
           <Message severity='info' text='Enter a brief prompt describing the scene of your crisis' className='!mt-4' />}
       </div>
       <div
         className='flex w-full h-screen' id={'canvas-container'}>
         <Canvas shadows>
           <PerspectiveCamera position={[1, 1, 1]} makeDefault />
-          <OrbitControls maxZoom={50} minZoom={10} enabled={!isDragging} />
-          {model && <Model url={model} setIsDragging={setIsDragging} floorPlane={floorPlane} />}
+          <OrbitControls maxZoom={50} minZoom={10} enabled={!isDragging}/>
+          {models.length > 0 ? models.map((model, i) => <Model key={i} url={model} setIsDragging={setIsDragging}
+                                                               floorPlane={floorPlane} />) : null}
           <Plane />
           <ambientLight intensity={25} />
         </Canvas>
