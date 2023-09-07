@@ -9,6 +9,7 @@ const map: Record<string, string> = {
   car: 'car.obj',
   street: 'street.obj',
   'street light': 'street-light.obj',
+  'tall building': 'tall-building.obj'
 }
 
 const fetchFromS3 = async (url: string) => {
