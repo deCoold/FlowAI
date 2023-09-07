@@ -1,5 +1,4 @@
 import { Landing } from '@/app/components/landing'
-import * as three from 'three'
 
 export default function Home() {
   return (

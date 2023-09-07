@@ -1,28 +1,41 @@
 import { NextResponse, NextRequest } from 'next/server'
-import Replicate from 'replicate'
+import { Client } from '@banana-dev/banana-dev'
 
-const replicate = new Replicate({
-  auth: 'r8_2QAlQAX80PC4rU6wGeBupTOwjjcMP1s15DBL8'
-})
+const map: Record<string, string> = {
+  airplane: 'tmp_mesh.obj'
+}
+
+const fetchFromS3 = async (key: string) => {
+  const blob = await fetch(`https://flow-ai-hackathon.s3.us-west-1.amazonaws.com/${map[key]}`).then(_ => _.blob()).catch(e => {
+    console.error('Error fetching from S3', e)
+    throw e
+  })
+
+  return new NextResponse(blob, { status: 200 })
+}
 export const POST = async (req: NextRequest) => {
   const { prompt } = await req.json()
   console.log(`Received request to generate 3D model from prompt: ${prompt}`)
 
-  try {
-    const output = (await replicate.run(
-      process.env.REPLICATE_TOKEN as any,
-      {
-        input: {
-          prompt
-        }
-      }
-    )) as string[]
+  const model = new Client(
+    process.env.BANANA_TOKEN!,
+    '2aa8faa1-1df1-4432-9940-7d1cd61e0e39',
+    'https://shap-e-banana-dev-lm8kjszq49.run.banana.dev'
+  )
 
-    console.log('Output from replicate', output)
-    return NextResponse.json({
-      url: output[0]
-    })
+  try {
+    if (map[prompt]) {
+      return fetchFromS3(prompt)
+    }
+
+    const { json, meta } = await model.call('/', { prompt })
+
+    console.log('Output from Banana.dev', json)
+
+    const s3Url = json.url
+
+    return fetchFromS3(s3Url)
   } catch (e) {
-    console.error('Error running replicate', e)
+    console.error('Error running Banana.dev', e)
   }
 }
