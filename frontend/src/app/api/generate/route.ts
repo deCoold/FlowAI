@@ -2,7 +2,8 @@ import { NextResponse, NextRequest } from 'next/server'
 import { Client } from '@banana-dev/banana-dev'
 
 const map: Record<string, string> = {
-  house: 'house.obj'
+  house: 'house.obj',
+  fountain: 'fountain.obj'
 }
 
 const fetchFromS3 = async (key: string) => {
