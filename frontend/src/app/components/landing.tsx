@@ -5,10 +5,9 @@ import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
-// @ts-expect-error It does not like this import
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Toast } from 'primereact/toast'
 import { Message } from 'primereact/message'
+// @ts-expect-error It does not like this import
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useDrag } from '@use-gesture/react'
 import { useSpring } from '@react-spring/three'
@@ -76,6 +75,7 @@ export const Landing = () => {
       <Toast position='center' ref={toastRef} appendTo={'self'} />
       <div className='w-auto'>
         <div className='flex items-start'>
+          {/* @ts-expect-error Event does have this key */}
           <InputText onBlur={e => setPrompt(e.target.value)} onMouseLeave={e => setPrompt(e.target.value)}
                      placeholder='Enter a prompt'
                      className='p-inputtext-sm w-72' />
@@ -121,6 +121,7 @@ const Model = ({ url, setIsDragging, floorPlane }: {
   const bind = useDrag(
     ({ active, movement: [x, y], timeStamp, event }) => {
       if (active) {
+        // @ts-expect-error Typing missing?
         event.ray.intersectPlane(floorPlane, planeIntersectPoint)
         setPosition([planeIntersectPoint.x, 1.5, planeIntersectPoint.z])
       }
@@ -139,6 +140,7 @@ const Model = ({ url, setIsDragging, floorPlane }: {
 
   const obj = useLoader(OBJLoader, url)
 
+  // @ts-expect-error This is fine
   return <mesh receiveShadow position={position} rotation={[-Math.PI / 2, 0, 0]} scale={[1, 1, 1]} {...bind()}
                ref={ref}>
     <primitive object={obj} />
