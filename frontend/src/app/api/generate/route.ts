@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import { Client } from '@banana-dev/banana-dev'
 
 const map: Record<string, string> = {
-  airplane: 'tmp_mesh.obj'
+  house: 'house.obj'
 }
 
 const fetchFromS3 = async (key: string) => {
@@ -13,6 +13,7 @@ const fetchFromS3 = async (key: string) => {
 
   return new NextResponse(blob, { status: 200 })
 }
+
 export const POST = async (req: NextRequest) => {
   const { prompt } = await req.json()
   console.log(`Received request to generate 3D model from prompt: ${prompt}`)
@@ -30,11 +31,9 @@ export const POST = async (req: NextRequest) => {
 
     const { json, meta } = await model.call('/', { prompt })
 
-    console.log('Output from Banana.dev', json)
+    console.log('Output from Banana.dev', json, meta)
 
-    const s3Url = json.url
-
-    return fetchFromS3(s3Url)
+    return fetchFromS3(`https://flow-ai-hackathon.s3.us-west-1.amazonaws.com/${prompt}`)
   } catch (e) {
     console.error('Error running Banana.dev', e)
   }

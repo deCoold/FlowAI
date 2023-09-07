@@ -111,12 +111,11 @@ const Model = ({ url, setIsDragging, floorPlane }: {
   const [position, setPosition] = useState<[number, number, number]>([randomNumber(0, 5), 1, randomNumber(0, 5)])
   let planeIntersectPoint = new THREE.Vector3()
 
-  const [spring, api] = useSpring(() => ({
-    // position: [0, 0, 0],
+  const [_, api] = useSpring(() => ({
     position,
     scale: 1,
     rotation: [0, 0, 0],
-    config: { friction: 10 }
+    config: { friction: 1 }
   }))
 
   const bind = useDrag(
