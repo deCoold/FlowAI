@@ -15,3 +15,9 @@ node_modules
 .idea
 
 dist
+
+lib/
+
+.zip
+
+.env
