@@ -14,17 +14,10 @@
     "@react-spring/three": "^9.7.3",
     "@react-three/drei": "^9.82.0",
     "@react-three/fiber": "^8.14.1",
-    "@types/node": "20.5.9",
-    "@types/react": "18.2.21",
-    "@types/react-dom": "18.2.7",
     "@use-gesture/react": "^10.2.27",
     "autoprefixer": "10.4.15",
-    "eslint": "8.48.0",
-    "eslint-config-next": "13.4.19",
-    "eslint-config-prettier": "^9.0.0",
     "next": "13.4.19",
     "postcss": "8.4.29",
-    "prettier": "^3.0.3",
     "primeicons": "^6.0.1",
     "primereact": "^9.6.2",
     "react": "18.2.0",
@@ -34,6 +27,13 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@types/three": "^0.155.1"
+    "@types/node": "20.5.9",
+    "@types/react": "18.2.21",
+    "@types/react-dom": "18.2.7",
+    "@types/three": "^0.155.1",
+    "eslint": "8.48.0",
+    "eslint-config-next": "13.4.19",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.3"
   }
 }
