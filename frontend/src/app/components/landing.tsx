@@ -2,7 +2,6 @@
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { useEffect, useRef, useState } from 'react'
-import * as THREE from 'three'
 import { Toast } from 'primereact/toast'
 import { Message } from 'primereact/message'
 import { fetchFromS3 } from '@/app/lib/fetch'
@@ -13,7 +12,10 @@ export type UIModel = {
   title: string
   scale: ModelResponse['models'][0]['scale']
   position: ModelResponse['models'][0]['position']
+  // S3 url
   url: string
+  // Local Blob url
+  localUrl: string
 }
 
 export const Landing = () => {
@@ -59,12 +61,14 @@ export const Landing = () => {
           title: model.title,
           scale: model.scale,
           position: model.position,
-          url: URL.createObjectURL(new Blob([model.buffer]))
+          url: model.url,
+          localUrl: URL.createObjectURL(new Blob([model.buffer]))
         }
       })
 
       // Creates local urls for Blobs to feed into Three
       setUiModels([...uiModels, ...modelsWithUrls])
+      console.log('Downloaded models from server and S3')
     } catch (e) {
       console.error('Error retrieving models from server', { e })
       setError('An error occurred :(')
