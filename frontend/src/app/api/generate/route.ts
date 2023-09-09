@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Client } from '@banana-dev/banana-dev'
 import { fetchFromSilas, SilasEntity } from '@/app/lib/fetch'
 
+// a volcano is erupting next to a school bus stopped next to it
 const map: Record<string, string> = {
   house: 'house.obj',
   fountain: 'fountain.obj',
@@ -18,10 +19,12 @@ const map: Record<string, string> = {
   'fire truck': 'firetruck.obj',
   volcano: 'volcano.obj',
   'school bus': 'school bus.obj',
-  schoolbus: 'school bus.obj'
+  schoolbus: 'school bus.obj',
+  flood: 'flood.obj',
+  cottage: 'cottage.obj'
 }
 
-const shapeModel = new Client(process.env.BANANA_TOKEN!, '2aa8faa1-1df1-4432-9940-7d1cd61e0e39', 'https://shap-e-banana-dev-lm8kjszq49.run.banana.dev')
+const bananaClient = new Client(process.env.BANANA_TOKEN!, '2aa8faa1-1df1-4432-9940-7d1cd61e0e39', 'https://shap-e-banana-dev-lm8kjszq49.run.banana.dev')
 
 const toS3Url = (key: string) => `https://flow-ai-hackathon.s3.us-west-1.amazonaws.com/${key}`
 
@@ -40,13 +43,15 @@ export const POST = async (req: NextRequest) => {
   }: {
     prompt: string
   } = await req.json()
+  if (!prompt) return new Response('No prompt provided', { status: 400 })
+  // The request could be for generating a single entity rather than a scene
+  const isSingleEntity = prompt.split(' ').length === 1
+
   console.log(`Received request to generate 3D model from prompt: ${prompt}`)
 
-  if (!prompt) return new Response('No prompt provided', { status: 400 })
-
   try {
-    // Fetches the entities to generate models for along with their position and sclae
-    const entities = await fetchFromSilas(prompt)
+    // Fetches the entities to generate models for along with their position and scale
+    const entities = isSingleEntity ? [{ title: prompt }] : await fetchFromSilas(prompt)
     // We want to avoid re-generating models that already exist, this looks up the existing models in the cache (i.e. already in S3)
     const existingEntities = entities
       .map(p => {
@@ -65,13 +70,10 @@ export const POST = async (req: NextRequest) => {
     console.log(`GPT returned ${entities.length} entities`, entities)
     console.log(`Generating ${filteredEntities.length} models`, filteredEntities)
 
-    if (filteredEntities.length > 0) {
-      throw new Error('Should not be this')
-    }
-
     const models: SilasEntityWithUrl[] = await Promise.all(
+      // Generates models through Banana.dev
       filteredEntities.map(async e => {
-        const { json } = (await shapeModel.call('/', { prompt: e.title })) as {
+        const { json } = (await bananaClient.call('/', { prompt: e.title })) as {
           json: {
             url: string
           }
